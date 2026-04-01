@@ -1,0 +1,28 @@
+# --- Ansible & OS ---
+*.retry
+*.log
+.DS_Store
+Thumbs.db
+
+# --- Sensitive Data (Wichtig!) ---
+# Falls du dich doch entscheidest, die hosts.ini nicht zu teilen:
+# hosts.ini
+.env
+*.key
+*.pem
+
+# --- JetBrains IDE (IntelliJ, PyCharm, etc.) ---
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+gen/
+
+# --- VS Code ---
+.vscode/
+*.code-workspace
+
+# --- Temporary Files ---
+*.tmp
+*.temp
