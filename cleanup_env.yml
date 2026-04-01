@@ -1,0 +1,18 @@
+- name: GIBB-PSA Lernumgebung abbauen (Teardown)
+  hosts: nodes
+  become: yes
+  tasks:
+    - name: Docker-Container stoppen und entfernen
+      shell: "docker-compose down"
+      args:
+        chdir: /opt/gibb_project
+      ignore_errors: yes  # Falls die Container schon aus sind, soll das Playbook nicht stoppen
+
+    - name: Projektverzeichnis komplett löschen
+      file:
+        path: /opt/gibb_project
+        state: absent  # Das Zauberwort: Löscht den Ordner und alles darin
+
+    - name: Docker-Images aufräumen (optional)
+      shell: "docker image prune -a -f"
+      # Löscht ungenutzte Docker-Bilder, um Speicherplatz (GiB!) zu sparen

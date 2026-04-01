@@ -1,0 +1,56 @@
+- name: Setup GIBB-PSA Lernumgebung
+  hosts: nodes
+  become: yes
+  tasks:
+    - name: Dependencies installieren
+      apt:
+        name:
+          - git
+          - docker.io
+          - docker-compose
+        state: present
+        update_cache: yes
+
+    - name: Projektverzeichnis erstellen
+      file:
+        path: /opt/gibb_project
+        state: directory
+        owner: vmadmin
+        mode: '0755'
+
+    - name: GIBB Repository klonen
+      git:
+        repo: "{{ git_repo_url }}"
+        dest: /opt/gibb_project
+        force: yes
+
+    - name: Docker-Compose Konfiguration anlegen
+      copy:
+        dest: /opt/gibb_project/docker-compose.yml
+        content: |
+          version: '3.8'
+          services:
+            web:
+              image: nginx:latest
+              ports:
+                - "80:80"
+              volumes:
+                - ./html:/usr/share/nginx/html
+
+    - name: HTML-Ordner sicherstellen
+      file:
+        path: /opt/gibb_project/html
+        state: directory
+
+    - name: Index.html mit Server-Info erstellen
+      copy:
+        dest: /opt/gibb_project/html/index.html
+        content: |
+          <h1>GIBB-PSA Lernumgebung</h1>
+          <p>Instanz: {{ inventory_hostname }}</p>
+          <p>Gesteuert via Ansible</p>
+
+    - name: Infrastruktur mit Docker-Compose starten
+      shell: "docker-compose up -d"
+      args:
+        chdir: /opt/gibb_project
